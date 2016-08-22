@@ -96,8 +96,15 @@ controller.hears('hello_intent', ['direct_message', 'mention', 'direct_mention']
 });
 
 
+var responses = [
+    'Lol no, you\'re on your own',
+    'Maybe if you were a bit nicer before',
+    'It\'s better if you figure it out yourself',
+    'I\'m just a bot, what do you expect me to do!?'
+];
+
 controller.hears('smartass', ['direct_message', 'mention', 'direct_mention'], apiai.hears, function (bot, message) {
-    bot.reply(message, 'Lol no you\'re on your own');
+    bot.reply(message, responses[Math.floor(Math.random() * 3) ]);
 });
 
 controller.hears(['flights'], 'direct_message', apiai.hears, function (bot, message) {
