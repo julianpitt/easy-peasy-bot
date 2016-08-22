@@ -119,6 +119,11 @@ controller.hears('smartass', keywords, apiai.hears, function (bot, message) {
     }
 });
 
+controller.hears('bees', keywords, function (bot, message) {
+    var user = "<@coderbearbot";
+    bot.reply(message, user + " Tell me about the bees"); // wrap around like this to create an @ mention of the user
+});
+
 controller.hears(['flights'], 'direct_message', apiai.hears, function (bot, message) {
     if(message.fulfillment.speech !== '') {
         bot.reply(message, message.fulfillment.speech);
@@ -127,10 +132,20 @@ controller.hears(['flights'], 'direct_message', apiai.hears, function (bot, mess
     }
 });
 
-controller.hears(['spam'], keywords, apiai.hears, function (bot, message) {
+controller.hears(['spam'], 'message_received', apiai.hears, function (bot, message) {
     if(message.fulfillment.speech !== '') {
         bot.reply(message, message.fulfillment.speech);
     } else {
+
+        var channelID = message.channel;
+        var userlist = channel.list;
+
+        users.forEach(function(user, index, arr){
+            userlist+="<@"+user+"> ";
+        });
+
+        bot.reply(message, userlist);
+
         bot.reply(message, {
             "attachments": [
                 {
