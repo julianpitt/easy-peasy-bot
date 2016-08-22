@@ -146,8 +146,6 @@ controller.hears(['spam'], keywords, apiai.hears, function (bot, message) {
     }
 });
 
-channels.info()
-
 /**
  * AN example of what could be:
  * Any un-handled direct mention gets a reaction and a pat response!
