@@ -81,7 +81,15 @@ controller.on('rtm_close', function (bot) {
     // you may want to attempt to re-open
 });
 
+var responses = [
+    'Lol no, you\'re on your own',
+    'Maybe if you were a bit nicer before',
+    'It\'s better if you figure it out yourself',
+    'I\'m just a bot, what do you expect me to do!?'
+];
 
+var keywords = ['direct_message', 'mention', 'direct_mention'];
+var responseTestFlag = false;
 /**
  * Core bot logic goes here!
  */
@@ -91,20 +99,24 @@ controller.on('bot_channel_join', function (bot, message) {
     bot.reply(message, "I'm here!")
 });
 
-controller.hears('hello_intent', ['direct_message', 'mention', 'direct_mention'], apiai.hears, function (bot, message) {
+controller.hears('hello_intent', keywords, apiai.hears, function (bot, message) {
     bot.reply(message, 'Hello!');
+    responseTestFlag = true;
 });
 
+controller.hears('What you doin?', keywords, function (bot, message) {
+    if(responseTestFlag) {
+        bot.reply(message, 'Nothin hbu?');
+    }
+    responseTestFlag = false;
+});
 
-var responses = [
-    'Lol no, you\'re on your own',
-    'Maybe if you were a bit nicer before',
-    'It\'s better if you figure it out yourself',
-    'I\'m just a bot, what do you expect me to do!?'
-];
-
-controller.hears('smartass', ['direct_message', 'mention', 'direct_mention'], apiai.hears, function (bot, message) {
-    bot.reply(message, responses[Math.floor(Math.random() * 3) ]);
+controller.hears('smartass', keywords, apiai.hears, function (bot, message) {
+    if(message.fulfillment.speech !== '') {
+        bot.reply(message, message.fulfillment.speech);
+    } else {
+        bot.reply(message, responses[Math.floor(Math.random() * 3) ]);
+    }
 });
 
 controller.hears(['flights'], 'direct_message', apiai.hears, function (bot, message) {
@@ -112,6 +124,25 @@ controller.hears(['flights'], 'direct_message', apiai.hears, function (bot, mess
         bot.reply(message, message.fulfillment.speech);
     } else {
         bot.reply(message, "You requested to fly to " + message.entities['geo-city'] + " on " + message.entities['date']+".");
+    }
+});
+
+controller.hears(['spam'], 'direct_message', apiai.hears, function (bot, message) {
+    if(message.fulfillment.speech !== '') {
+        bot.reply(message, message.fulfillment.speech);
+    } else {
+        bot.reply(message, {
+            "attachments": [
+                {
+                    "fields": [
+                        {
+                            "short": false
+                        }
+                    ],
+                    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Spam_can.png/440px-Spam_can.png"
+                }
+            ]
+        });
     }
 });
 
