@@ -127,7 +127,7 @@ controller.hears(['flights'], 'direct_message', apiai.hears, function (bot, mess
     }
 });
 
-controller.hears(['spam'], 'direct_message', apiai.hears, function (bot, message) {
+controller.hears(['spam'], keywords, apiai.hears, function (bot, message) {
     if(message.fulfillment.speech !== '') {
         bot.reply(message, message.fulfillment.speech);
     } else {
@@ -145,6 +145,8 @@ controller.hears(['spam'], 'direct_message', apiai.hears, function (bot, message
         });
     }
 });
+
+channels.info()
 
 /**
  * AN example of what could be:
