@@ -38,6 +38,8 @@ if (process.env.MONGOLAB_URI) {
     };
 }
 
+
+
 /**
  * Are being run as an app or a custom integration? The initialization will differ, depending
  */
@@ -57,6 +59,10 @@ if (process.env.TOKEN || process.env.SLACK_TOKEN) {
 }
 
 
+var apiai = require('botkit-middleware-apiai')({
+    token: process.env.APIAI_TOKEN
+});
+controller.middleware.receive.use(apiai.receive);
 /**
  * A demonstration for how to handle websocket events. In this case, just log when we have and have not
  * been disconnected from the websocket. In the future, it would be super awesome to be able to specify
@@ -85,10 +91,22 @@ controller.on('bot_channel_join', function (bot, message) {
     bot.reply(message, "I'm here!")
 });
 
-controller.hears('hello', 'direct_message', function (bot, message) {
+controller.hears('hello_intent', ['direct_message', 'mention', 'direct_mention'], apiai.hears, function (bot, message) {
     bot.reply(message, 'Hello!');
 });
 
+
+controller.hears('smartass', ['direct_message', 'mention', 'direct_mention'], apiai.hears, function (bot, message) {
+    bot.reply(message, 'Lol no you\'re on your own');
+});
+
+controller.hears(['flights'], 'direct_message', apiai.hears, function (bot, message) {
+    if(message.fulfillment.speech !== '') {
+        bot.reply(message, message.fulfillment.speech);
+    } else {
+        bot.reply(message, "You requested to fly to " + message.entities['geo-city'] + " on " + message.entities['date']+".");
+    }
+});
 
 /**
  * AN example of what could be:
